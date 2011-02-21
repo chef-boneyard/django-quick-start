@@ -1,0 +1,58 @@
+{
+  "id": "django_cms",
+  "server_roles": [
+    "django_cms"
+  ],
+  "type": {
+    "django_cms": [
+      "django",
+      "gunicorn"
+    ]
+  },
+  "database_slave_role": [
+    "django_cms_database_slave"
+  ],
+  "database_master_role": [
+    "django_cms_database_master"
+  ],
+  "repository": "https://github.com/opscode/django-quick-start-cms.git",
+  "revision": {
+    "production": "master"
+  },
+  "force": {
+    "production": "false"
+  },
+  "migrate": {
+    "production": "true"
+  },
+  "databases": {
+    "production": {
+      "encoding": "utf8",
+      "username": "django_cms",
+      "adapter": "mysql",
+      "port": "3306",
+      "database": "django_cms_production",
+      "password": "awesome_password"
+    }
+  },
+  "mysql_root_password": {
+    "production": "mysql_root"
+  },
+  "mysql_debian_password": {
+    "production": "mysql_debian"
+  },
+  "mysql_repl_password": {
+    "production": "mysql_repl"
+  },
+  "deploy_to": "/srv/django_cms",
+  "deploy_key": "",
+  "owner": "nobody",
+  "group": "nogroup",
+  "packages": {
+    "curl": ""
+  },
+  "pips": {
+    "django": "1.2.5"
+  },
+  "local_settings_file_name":"local_settings.py"
+}
