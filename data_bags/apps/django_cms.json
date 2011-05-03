@@ -54,5 +54,5 @@
   "pips": {
     "django": "1.2.5"
   },
-  "local_settings_file_name":"local_settings.py"
+  "local_settings_file":"local_settings.py"
 }
