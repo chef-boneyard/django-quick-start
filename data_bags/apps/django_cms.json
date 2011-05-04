@@ -20,10 +20,10 @@
     "production": "master"
   },
   "force": {
-    "production": "false"
+    "production": false
   },
   "migrate": {
-    "production": "true"
+    "production": false
   },
   "databases": {
     "production": {
