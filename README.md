@@ -134,7 +134,6 @@ Server Roles
 All the required roles have been created in the django-quick-start repository. They are in the **roles/** directory.
 
     base.rb
-    production.rb
     django_cms_database_master.rb
     django_cms.rb
     django_cms_load_balancer.rb
@@ -175,7 +174,7 @@ Launch the entire stack on a single instance.
 
     knife ec2 server create -G default -I ami-7000f019 -f m1.small \
       -S django-quick-start -i ~/.ssh/django-quick-start.pem -x ubuntu \
-      -r 'role[production],role[base],role[django_cms_database_master],role[django_cms],recipe[django_cms::db_bootstrap]'
+      -r 'role[base],role[django_cms_database_master],role[django_cms],recipe[django_cms::db_bootstrap]'
       
 
 Once complete, the instance will be running MySQL and Django CMS under Gunicorn. With only one system, a load balancer is unnecessary.
@@ -189,27 +188,27 @@ First, launch the database instance.
 
     knife ec2 server create -G default -I ami-7000f019 -f m1.small \
       -S django-quick-start -i ~/.ssh/django-quick-start.pem -x ubuntu \
-      -r 'role[production],role[base],role[django_cms_database_master]'
+      -r 'role[base],role[django_cms_database_master]'
       
 
 Once the database master is up, launch one node that will set up the database with default data.
 
     knife ec2 server create -G default -I ami-7000f019 -f m1.small \
       -S django-quick-start -i ~/.ssh/django-quick-start.pem -x ubuntu \
-      -r 'role[production],role[base],role[django_cms],recipe[django_cms::db_bootstrap]'
+      -r 'role[base],role[django_cms],recipe[django_cms::db_bootstrap]'
       
 
 Launch the second application instance w/o the django_cms::db_bootstrap recipe.
 
     knife ec2 server create -G default -I ami-7000f019 -f m1.small \
       -S django-quick-start -i ~/.ssh/django-quick-start.pem -x ubuntu \
-      -r 'role[production],role[base],role[django_cms]'
+      -r 'role[base],role[django_cms]'
 
 Once the second application instance is up, launch the load balancer.
 
     knife ec2 server create -G default -I ami-7000f019 -f m1.small \
       -S django-quick-start -i ~/.ssh/django-quick-start.pem -x ubuntu \
-      -r 'role[production],role[base],role[django_cms_load_balancer]'
+      -r 'role[base],role[django_cms_load_balancer]'
 
 Once complete, we'll have four instances running in EC2 with MySQL, Django CMS and haproxy up and available to serve traffic.
 
@@ -240,26 +239,26 @@ The data bag item for Django CMS contains default passwords that should certainl
 The passwords in the Django CMS Data Bag Item are set to the values show below:
 
     "mysql_root_password": {
-      "production": "mysql_root"
+      "_default": "mysql_root"
     },
     "mysql_debian_password": {
-      "production": "mysql_debian"
+      "_default": "mysql_debian"
     },
     "mysql_repl_password": {
-      "production": "mysql_repl"
+      "_default": "mysql_repl"
     },
     
 To change the password to something stronger, modify **mysql_root**, **mysql_debian**, **mysql_repl** values. Something like the following secure passwords:
 
     vi data_bags/apps/django_cms.json
     "mysql_root_password": {
-      "production": "super_s3cur3_r00t_pw"
+      "_default": "super_s3cur3_r00t_pw"
     },
     "mysql_debian_password": {
-      "production": "super_s3cur3_d3b1@n_pw"
+      "_default": "super_s3cur3_d3b1@n_pw"
     },
     "mysql_repl_password": {
-      "production": "super_s3cur3_r3pl_pw"
+      "_default": "super_s3cur3_r3pl_pw"
     },
 
 Once the entries are modified, simply load the data bag item from the json file:
@@ -271,15 +270,13 @@ Once the entries are modified, simply load the data bag item from the json file:
 For people not using Amazon EC2, other Cloud computing providers can be used. Supported by knife and fog as of this revision:
 
 * Rackspace Cloud
-* Terremark vCloud
-* Slicehost
 
 See the [launch cloud instances page](http://wiki.opscode.com/display/chef/Launch+Cloud+Instances+with+Knife) on the Chef wiki for more information about using Knife to launch these instance types.
 
 For people not using cloud at all, but have their own infrastructure and hardware, use the [bootstrap](http://wiki.opscode.com/display/chef/Knife+Bootstrap) knife command. Note that the run-list specification is slightly different. For the first example of the single instance:
 
     knife bootstrap IPADDRESS 
-      -r 'role[production],role[base],role[django_cms_database_master],role[django_cms],recipe[django_cms::db_bootstrap]'
+      -r 'role[base],role[django_cms_database_master],role[django_cms],recipe[django_cms::db_bootstrap]'
 
 See the contextual help for knife bootstrap on the additional options to set for SSH.
 
