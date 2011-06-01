@@ -17,16 +17,16 @@
   ],
   "repository": "https://github.com/opscode/django-quick-start-cms.git",
   "revision": {
-    "production": "master"
+    "_default": "master"
   },
   "force": {
-    "production": false
+    "_default": false
   },
   "migrate": {
-    "production": false
+    "_default": false
   },
   "databases": {
-    "production": {
+    "_default": {
       "encoding": "utf8",
       "username": "django_cms",
       "adapter": "mysql",
@@ -36,13 +36,13 @@
     }
   },
   "mysql_root_password": {
-    "production": "mysql_root"
+    "_default": "mysql_root"
   },
   "mysql_debian_password": {
-    "production": "mysql_debian"
+    "_default": "mysql_debian"
   },
   "mysql_repl_password": {
-    "production": "mysql_repl"
+    "_default": "mysql_repl"
   },
   "deploy_to": "/srv/django_cms",
   "deploy_key": "",
