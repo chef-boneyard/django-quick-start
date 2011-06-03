@@ -34,12 +34,14 @@
 app = data_bag_item("apps", "django_cms")
 virtualenv = resources(:python_virtualenv => app['id'])
 python_bin = ::File.join(virtualenv.path, "bin", "python")
+admin_username = app['admin_username'] || 'admin'
+admin_password = app['admin_password'] || 'djangocms'
 
 execute "db_bootstrap" do
   command <<-EOS
   #{python_bin} manage.py syncdb --all --noinput
-  #{python_bin} manage.py createsuperuser --noinput --username=admin --email=admin@example.com
-  #{python_bin} -c \"from django.contrib.auth.models import User; u=User.objects.get(username='admin');u.set_password('djangocms');u.save();\"  
+  #{python_bin} manage.py createsuperuser --noinput --username=#{admin_username} --email=admin@example.com
+  #{python_bin} -c \"from django.contrib.auth.models import User; u=User.objects.get(username='#{admin_username}');u.set_password('#{admin_password}');u.save();\"  
   EOS
   cwd "#{app['deploy_to']}/current"
   environment ({'DJANGO_SETTINGS_MODULE' => 'settings'}) 
