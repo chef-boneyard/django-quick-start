@@ -17,18 +17,51 @@
 # limitations under the License.
 #
 
-default['mysql']['bind_address']              = ipaddress
-default['mysql']['datadir']                   = "/var/lib/mysql"
+default['mysql']['bind_address']               = attribute?('cloud') ? cloud['local_ipv4'] : ipaddress
 
 case node["platform"]
-when "centos", "redhat", "fedora", "suse"
+when "centos", "redhat", "fedora", "suse", "scientific", "amazon"
+  default['mysql']['package_name']            = "mysql-server"
+  default['mysql']['service_name']            = "mysqld"
+  default['mysql']['basedir']                 = "/usr"
+  default['mysql']['data_dir']                = "/var/lib/mysql"
+  default['mysql']['root_group']              = "root"
+  default['mysql']['mysqladmin_bin']          = "/usr/bin/mysqladmin"
+  default['mysql']['mysql_bin']               = "/usr/bin/mysql"
+
+  set['mysql']['conf_dir']                    = '/etc'
   set['mysql']['socket']                      = "/var/lib/mysql/mysql.sock"
   set['mysql']['pid_file']                    = "/var/run/mysqld/mysqld.pid"
   set['mysql']['old_passwords']               = 1
+  set['mysql']['grants_path']                 = "/etc/mysql_grants.sql"
+when "freebsd"
+  default['mysql']['package_name']            = "mysql55-server"
+  default['mysql']['service_name']            = "mysql-server"
+  default['mysql']['basedir']                 = "/usr/local"
+  default['mysql']['data_dir']                = "/var/db/mysql"
+  default['mysql']['root_group']              = "wheel"
+  default['mysql']['mysqladmin_bin']          = "/usr/local/bin/mysqladmin"
+  default['mysql']['mysql_bin']               = "/usr/local/bin/mysql"
+
+  set['mysql']['conf_dir']                    = '/usr/local/etc'
+  set['mysql']['socket']                      = "/tmp/mysqld.sock"
+  set['mysql']['pid_file']                    = "/var/run/mysqld/mysqld.pid"
+  set['mysql']['old_passwords']               = 0
+  set['mysql']['grants_path']                 = "/var/db/mysql/grants.sql"
 else
+  default['mysql']['package_name']            = "mysql-server"
+  default['mysql']['service_name']            = "mysql"
+  default['mysql']['basedir']                 = "/usr"
+  default['mysql']['data_dir']                = "/var/lib/mysql"
+  default['mysql']['root_group']              = "root"
+  default['mysql']['mysqladmin_bin']          = "/usr/bin/mysqladmin"
+  default['mysql']['mysql_bin']               = "/usr/bin/mysql"
+
+  set['mysql']['conf_dir']                    = '/etc/mysql'
   set['mysql']['socket']                      = "/var/run/mysqld/mysqld.sock"
   set['mysql']['pid_file']                    = "/var/run/mysqld/mysqld.pid"
   set['mysql']['old_passwords']               = 0
+  set['mysql']['grants_path']                 = "/etc/mysql/grants.sql"
 end
 
 if attribute?('ec2')
@@ -37,6 +70,7 @@ if attribute?('ec2')
   default['mysql']['ebs_vol_size'] = 50
 end
 
+default['mysql']['allow_remote_root']               = false
 default['mysql']['tunable']['back_log']             = "128"
 default['mysql']['tunable']['key_buffer']           = "256M"
 default['mysql']['tunable']['max_allowed_packet']   = "16M"
@@ -58,5 +92,8 @@ default['mysql']['tunable']['query_cache_size']     = "16M"
 
 default['mysql']['tunable']['log_slow_queries']     = "/var/log/mysql/slow.log"
 default['mysql']['tunable']['long_query_time']      = 2
+
+default['mysql']['tunable']['expire_logs_days']     = 10
+default['mysql']['tunable']['max_binlog_size']      = "100M"
 
 default['mysql']['tunable']['innodb_buffer_pool_size']  = "256M"
