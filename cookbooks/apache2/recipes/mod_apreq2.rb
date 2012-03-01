@@ -1,6 +1,8 @@
 #
 # Cookbook Name:: apache2
-# Recipe:: python 
+# Recipe:: apreq2
+#
+# modified from the python recipe by Jeremy Bingham
 #
 # Copyright 2008-2009, Opscode, Inc.
 #
@@ -19,14 +21,25 @@
 
 case node[:platform]
   when "debian", "ubuntu"
-    package "libapache2-mod-python" do
+    package "libapache2-mod-apreq2" do
       action :install
     end
-  when "redhat", "centos", "scientific", "fedora"
-    package "mod_python" do
+  when "centos", "redhat", "fedora"
+    package "libapreq2" do
       action :install
       notifies :run, resources(:execute => "generate-module-list"), :immediately
     end
+    # seems that the apreq lib is weirdly broken or something - it needs to be
+    # loaded as "apreq", but on RHEL & derivitatives the file needs a symbolic
+    # link to mod_apreq.so.
+    link "/usr/lib64/httpd/modules/mod_apreq.so" do
+      to "/usr/lib64/httpd/modules/mod_apreq2.so"
+      only_if "test -f /usr/lib64/httpd/modules/mod_apreq2.so"
+    end
+    link "/usr/lib/httpd/modules/mod_apreq.so" do
+      to "/usr/lib/httpd/modules/mod_apreq2.so"
+      only_if "test -f /usr/lib/httpd/modules/mod_apreq2.so"
+    end
 end
 
-apache_module "python"
+apache_module "apreq"

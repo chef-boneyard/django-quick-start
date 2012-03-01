@@ -1,6 +1,8 @@
 #
 # Cookbook Name:: apache2
-# Recipe:: log_config 
+# Recipe:: perl 
+#
+# adapted from the mod_python recipe by Jeremy Bingham
 #
 # Copyright 2008-2009, Opscode, Inc.
 #
@@ -17,8 +19,25 @@
 # limitations under the License.
 #
 
-if platform?("redhat", "centos", "scientific", "fedora", "suse", "arch", "freebsd")
-  apache_module "log_config"
-else
-  include_recipe "apache2"
+case node[:platform]
+  when "debian", "ubuntu"
+    package "libapache2-mod-perl2" do
+      action :install
+    end
+   package "libapache2-request-perl" do
+      action :install
+   end
+   package "apache2-mpm-prefork" do
+      action :install
+   end
+  when "centos", "redhat", "fedora"
+    package "mod_perl" do
+      action :install
+      notifies :run, resources(:execute => "generate-module-list"), :immediately
+    end
+    package "perl-libapreq2" do
+      action :install
+    end
 end
+
+apache_module "perl"
