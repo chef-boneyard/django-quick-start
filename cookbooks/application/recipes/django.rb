@@ -129,7 +129,7 @@ if app["database_master_role"]
       group app["group"]
       mode "644"
       variables(
-        :host => dbm['fqdn'],
+        :host => (dbm.attribute?('cloud') ? dbm['cloud']['local_ipv4'] : dbm['ipaddress']),
         :database => app['databases'][node.chef_environment],
         :django_version => django_version
       )
@@ -163,7 +163,8 @@ deploy_revision app['id'] do
     
     if requirements_file
       Chef::Log.info("Installing pips using requirements file: #{requirements_file}")
-      execute "pip install -E #{ve.path} -r #{requirements_file}" do
+      pip_cmd = File.join(ve.path, "bin", "pip")
+      execute "#{pip_cmd} install -r #{requirements_file}" do
         ignore_failure true
         cwd release_path
       end
